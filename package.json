@@ -1,6 +1,6 @@
 {
   "name": "@ambystech/ui",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Shared Astro components, design tokens and brand assets for Ambystech websites.",
   "type": "module",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "exports": {
     "./theme.css": "./src/styles/theme.css",
     "./components/*": "./src/components/*",
-    "./data/*": "./src/data/*",
+    "./data/*": "./src/data/*.ts",
     "./assets/*": "./src/assets/*"
   },
   "peerDependencies": {

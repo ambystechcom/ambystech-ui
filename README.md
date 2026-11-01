@@ -7,7 +7,7 @@ Astro compiles the `.astro` files.
 ## Install
 
 ```sh
-npm i github:ambystechcom/ambystech-ui#v0.1.1
+npm i github:ambystechcom/ambystech-ui#v0.1.2
 ```
 
 Requires `astro >= 7` and Tailwind CSS 4 in the consuming site.
