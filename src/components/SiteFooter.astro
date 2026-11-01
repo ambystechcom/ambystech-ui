@@ -38,7 +38,7 @@ const {
 
 <!--
   Shared site footer: always light, never dark. Slots:
-    brand    logo block; defaults to the logo + `tagline`
+    brand    logo block; defaults to the logo + `tagline` (+ `brand-extra`: email, social links)
     (default) link columns; defaults to `columns`
     contact  an extra trailing column (corporate's phone / email / address)
     bottom   the legal row; defaults to `copyright` + `notice`
@@ -51,6 +51,7 @@ const {
           <Image src={logo} alt="Ambystech" height={80} class="block h-10 w-[165px] object-contain object-left" />
         </a>
         {tagline && <p class="mt-3.5 text-[12.5px] leading-[1.6] text-muted-500">{tagline}</p>}
+        <slot name="brand-extra" />
       </slot>
     </div>
 
