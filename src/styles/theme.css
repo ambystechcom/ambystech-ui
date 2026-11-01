@@ -1,0 +1,218 @@
+/* @ambystech/ui — design tokens and shared utilities.
+   Source of truth for every Ambystech site. Lifted from the corporate site's
+   global.css; keep DESIGN.md and the design-system artifact in sync with it.
+   Consumers add `@import "tailwindcss";` before importing this file. */
+
+/* Tailwind v4 gates every `hover:` utility behind `@media (hover: hover)`, which
+   reports false on touch-capable Windows machines and in device emulation.
+   Restore the v3 behaviour: hover styles always apply. Do NOT change this to
+   `any-hover`: Chrome reports `any-hover: none` on those machines too. */
+@custom-variant hover (&:hover);
+
+@theme {
+    --font-sans: 'Inter Variable', Inter, system-ui, sans-serif;
+
+    --color-fuchsia-500: #f20c95;
+    --color-fuchsia-600: #e918a1;
+    --color-fuchsia-link: #e91a9c;
+    --color-fuchsia-text: #c21489;
+    --color-cta-start: #f00a92;
+    --color-cta-end: #ee14a3;
+    --color-blue-500: #3e6fff;
+    --color-accent-blue: #3675f5;
+    --color-accent-purple: #7756ee;
+    --color-violet-600: #7d42dc;
+    --color-violet-500: #6c52ff;
+    --color-pink-on-dark: #ff4db7;
+
+    --color-ink-950: #111831;
+    --color-navy-900: #17213f;
+    --color-navy-800: #29334e;
+    --color-slate-600: #56627d;
+    --color-muted-500: #67728e;
+    --color-muted-450: #6d7790;
+    --color-muted-300: #8a93a9;
+
+    --color-line-100: #edf0f5;
+    --color-line-200: #e2e7f0;
+    --color-line-300: #d6dce8;
+
+    --color-surface-0: #ffffff;
+    --color-surface-50: #f7f8fc;
+    --color-surface-100: #f1f3f9;
+    --color-tag-bg: #f2efff;
+    --color-violet-50: #f3f0ff;
+    --color-pink-50: #fff5fb;
+    --color-canvas-900: #0e152d;
+
+    --shadow-card: 0 10px 26px rgba(47, 69, 114, .065);
+    --shadow-card-hover: 0 16px 34px rgba(47, 69, 114, .10);
+    --shadow-cta: 0 10px 24px rgba(242, 12, 149, .22);
+    --shadow-cta-hover: 0 14px 30px rgba(242, 12, 149, .28);
+    --shadow-panel: 0 18px 50px rgba(40, 58, 105, .08);
+    --shadow-glass: 0 20px 60px rgba(20, 26, 55, .10);
+    --shadow-frame: 0 28px 75px rgba(28, 38, 77, .16);
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+    body {
+        @apply bg-white text-ink-950 antialiased;
+    }
+}
+
+@layer components {
+    /* Main container: min(100% − 64px, 1240px); the gutter drops to 18px per
+       side at bp-xl (1050px). Pass --container-max for the narrower shells. */
+    .container-site {
+        box-sizing: border-box;
+        margin-inline: auto;
+        width: min(calc(100% - 64px), var(--container-max, 1240px));
+    }
+    @media (max-width: 1050px) {
+        .container-site {
+            width: min(calc(100% - 36px), var(--container-max, 1240px));
+        }
+    }
+
+    /* Primary CTA pill: fuchsia gradient, white label, lifts on hover. */
+    .btn-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--color-cta-start), var(--color-cta-end));
+        color: #fff;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: var(--shadow-cta);
+        transition: transform 200ms, box-shadow 200ms;
+    }
+    .btn-cta:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-cta-hover);
+    }
+    .btn-cta:disabled,
+    .btn-cta[aria-disabled="true"] {
+        cursor: not-allowed;
+        background: #eceff5;
+        color: var(--color-muted-300);
+        box-shadow: none;
+        transform: none;
+    }
+
+    /* Dark pill (marketing hero primary) and outline pill (secondary). */
+    .btn-dark {
+        display: inline-flex;
+        height: 48px;
+        align-items: center;
+        gap: 10px;
+        border-radius: 999px;
+        background: #121a35;
+        padding: 0 23px;
+        font-size: 12px;
+        font-weight: 760;
+        color: #fff;
+        text-decoration: none;
+        box-shadow: 0 16px 32px rgba(18, 26, 53, .17);
+        transition: transform 150ms;
+    }
+    .btn-outline {
+        display: inline-flex;
+        min-height: 48px;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        border-radius: 999px;
+        border: 1px solid #dce1eb;
+        background: #fff;
+        padding: 0 23px;
+        font-size: 12px;
+        font-weight: 760;
+        color: #33405d;
+        text-decoration: none;
+        box-shadow: 0 8px 20px rgba(43, 54, 92, .04);
+        transition: transform 150ms, border-color 150ms;
+    }
+    .btn-dark:hover,
+    .btn-outline:hover {
+        transform: translateY(-2px);
+    }
+    .btn-outline:hover {
+        border-color: #c9cfdd;
+    }
+
+    /* Gradient words inside headings. */
+    .text-gradient {
+        background: linear-gradient(90deg, #ee168f, #b42bf0, #4a69ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    /* Cards: white fill, 1px line-200 border, shadow-card; lift on hover. */
+    .card-hover {
+        transition: transform 260ms ease-out, box-shadow 260ms ease-out, border-color 260ms ease-out;
+    }
+    .card-hover:hover {
+        transform: translateY(-3px);
+        border-color: var(--color-line-300);
+        box-shadow: var(--shadow-card-hover);
+    }
+
+    /* Category chip (AI, PRODUCT…). */
+    .tag {
+        display: inline-flex;
+        width: fit-content;
+        border-radius: 999px;
+        background: var(--color-tag-bg);
+        padding: 4px 9px;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: .04em;
+        color: var(--color-violet-600);
+        text-transform: uppercase;
+    }
+
+    /* Accent themes for the data-driven marketing pages. A page sets
+       data-accent on its <main>; sections read the two variables. */
+    [data-accent="blue"] {
+        --accent-grad: linear-gradient(135deg, #27b7ff, #4f72ff, #7459ff);
+        --accent-text: #3675f5;
+    }
+    [data-accent="purple"] {
+        --accent-grad: linear-gradient(135deg, #6f5bff, #914cf4, #c139e9);
+        --accent-text: #7756ee;
+    }
+    [data-accent="fuchsia"] {
+        --accent-grad: linear-gradient(135deg, #f20c95, #c23cf0, #675fff);
+        --accent-text: #f20c95;
+    }
+    .accent-text { color: var(--accent-text, #f20c95); }
+    .accent-grad { background: var(--accent-grad, linear-gradient(135deg, #f20c95, #c23cf0, #675fff)); }
+
+    /* Marketing section eyebrow and h2 (sizes follow clamp(min, vw, max)). */
+    .section-eyebrow {
+        font-size: 10px;
+        font-weight: 830;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+    }
+    .section-title {
+        margin: 16px 0 0;
+        font-size: clamp(35px, 4vw, 51px);
+        font-weight: 760;
+        line-height: 1.03;
+        letter-spacing: -.046em;
+        color: var(--color-ink-950);
+    }
+    .section-pad {
+        padding-block: 100px;
+    }
+    @media (max-width: 780px) {
+        .section-pad { padding-block: 70px; }
+    }
+}

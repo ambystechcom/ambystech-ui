@@ -1,0 +1,274 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Icon from './Icon.astro';
+import lockup from '../assets/brand/ambystech-lockup-dark.png';
+
+export interface HeaderLink {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  /** Where the logo links to. */
+  homeHref?: string;
+  /** Accessible name of the logo link. */
+  homeLabel?: string;
+  /** Site name shown after a divider next to the logo (e.g. "Open Source"). */
+  label?: string;
+  /** Plain links for the default desktop and mobile navigation. */
+  links?: HeaderLink[];
+  /** Index of the link to mark as the current page. */
+  active?: number;
+  /** Navbar height in px (desktop, mobile). Corporate uses 80/66, the open-source sites 72/64. */
+  height?: number;
+  mobileHeight?: number;
+  /** Where the desktop navigation sits: centred between logo and actions, or pushed to the right. */
+  navAlign?: 'center' | 'end';
+  /** Override the packaged Ambystech lockup. */
+  logo?: ImageMetadata;
+  /** Accessible names for the navigation and the menu button (pass translated strings). */
+  navLabel?: string;
+  openLabel?: string;
+  closeLabel?: string;
+}
+
+const {
+  homeHref = '/',
+  homeLabel = 'Ambystech home',
+  label,
+  links = [],
+  active = -1,
+  height = 72,
+  mobileHeight = 64,
+  navAlign = 'end',
+  logo = lockup,
+  navLabel = 'Primary',
+  openLabel = 'Open menu',
+  closeLabel = 'Close menu',
+} = Astro.props;
+
+const hasUtility = Astro.slots.has('utility');
+const hasNav = Astro.slots.has('nav') || links.length > 0;
+const hasMobile = Astro.slots.has('mobile') || links.length > 0;
+---
+
+<!--
+  Shared site header. The shell owns the sticky bar, the logo, the frosted state
+  on scroll (`data-scrolled` on #site-header), the underline classes
+  (.nav-trigger / .nav-line) and the mobile menu toggle. Sites add what is
+  theirs through slots:
+    utility  optional bar above the navbar (collapses on scroll)
+    nav      desktop navigation; defaults to `links`
+    actions  right-hand buttons (GitHub pill, Contact CTA, ...)
+    mobile   contents of the mobile menu card; defaults to `links`
+-->
+<header
+  id="site-header"
+  class="site-header sticky top-0 z-50 isolate w-full"
+  style={`--header-h: ${height}px; --header-h-mobile: ${mobileHeight}px;`}
+>
+  {hasUtility && (
+    <div class="utility-bar overflow-hidden">
+      <slot name="utility" />
+    </div>
+  )}
+
+  <div class="navbar relative w-full border-b">
+    <div class="navbar-inner container-site flex items-center">
+      <a href={homeHref} aria-label={homeLabel} class="inline-flex min-h-11 flex-none items-center gap-3 whitespace-nowrap no-underline">
+        <Image src={logo} alt="Ambystech" height={68} loading="eager" class="navbar-logo block w-auto object-contain" />
+        {label && (
+          <>
+            <span aria-hidden="true" class="h-[22px] w-px bg-line-200"></span>
+            <span class="text-[13px] font-bold tracking-[-.01em] text-navy-800">{label}</span>
+          </>
+        )}
+      </a>
+
+      {hasNav && (
+        <nav
+          aria-label={navLabel}
+          class:list={['nav-desktop flex h-full items-center text-[13px] font-[650] text-navy-800', navAlign === 'center' ? 'flex-1 justify-center' : 'ml-auto justify-end']}
+        >
+          <slot name="nav">
+            {links.map((l, i) => (
+              <a href={l.href} aria-current={i === active ? 'page' : undefined} class="nav-trigger relative inline-flex min-h-11 items-center whitespace-nowrap text-navy-800 no-underline">
+                {l.label}<span aria-hidden="true" class="nav-line"></span>
+              </a>
+            ))}
+          </slot>
+        </nav>
+      )}
+
+      <div class:list={['header-actions flex flex-none items-center gap-2.5', !hasNav && 'ml-auto']}>
+        <slot name="actions" />
+        {hasMobile && (
+          <button
+            type="button"
+            class="nav-toggle grid size-11 cursor-pointer place-items-center rounded-full border border-line-200 bg-white text-navy-900"
+            aria-expanded="false"
+            aria-controls="mobile-nav"
+            aria-label={openLabel}
+            data-label-open={openLabel}
+            data-label-close={closeLabel}
+          >
+            <span data-icon="bars"><Icon name="bars" size={16} /></span>
+            <span data-icon="xmark" hidden><Icon name="xmark" size={16} /></span>
+          </button>
+        )}
+      </div>
+    </div>
+
+    {hasMobile && (
+      <nav id="mobile-nav" aria-label={navLabel} class="mobile-nav" hidden>
+        <slot name="mobile">
+          {links.map((l, i) => (
+            <a
+              href={l.href}
+              aria-current={i === active ? 'page' : undefined}
+              class="flex min-h-11 w-full items-center justify-between py-1 text-navy-900 no-underline aria-[current=page]:text-fuchsia-text"
+            >
+              <span>{l.label}</span><Icon name="arrowRight" size={12} />
+            </a>
+          ))}
+        </slot>
+      </nav>
+    )}
+  </div>
+</header>
+
+<style is:global>
+  /* Global on purpose: sites reuse .nav-trigger / .nav-line inside their slots. */
+  .site-header .utility-bar {
+    max-height: 44px;
+    transition: max-height 240ms ease, opacity 180ms ease, transform 240ms ease;
+  }
+  .site-header[data-scrolled] .utility-bar {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
+  }
+
+  .site-header .navbar {
+    height: var(--header-h);
+    border-color: #eef1f6;
+    background: #fff;
+    transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+  }
+  .site-header[data-scrolled] .navbar {
+    border-color: rgba(224, 229, 240, .7);
+    background: rgba(255, 255, 255, .76);
+    -webkit-backdrop-filter: blur(18px) saturate(155%);
+    backdrop-filter: blur(18px) saturate(155%);
+    box-shadow: 0 10px 30px rgba(25, 38, 76, .08);
+  }
+  .site-header .navbar-inner {
+    height: var(--header-h);
+    gap: 40px;
+  }
+  .site-header .navbar-logo { height: 34px; }
+  .site-header .nav-desktop { gap: 30px; }
+
+  /* The fuchsia -> blue 2px underline that grows from the left. */
+  .site-header .nav-trigger { position: relative; }
+  .site-header .nav-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -14px;
+    height: 2px;
+    transform-origin: left;
+    transform: scaleX(0);
+    background: linear-gradient(90deg, #f20c95, #3e6fff);
+    transition: transform 150ms ease;
+  }
+  .site-header .nav-trigger:hover .nav-line,
+  .site-header .nav-trigger:focus-visible .nav-line,
+  .site-header .nav-trigger[aria-current='page'] .nav-line { transform: scaleX(1); }
+
+  /* Mobile menu: a floating card under the bar, toggled by the hamburger. */
+  .site-header .nav-toggle { display: none; }
+  .site-header .mobile-nav {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    top: calc(var(--header-h-mobile) + 6px);
+    z-index: 50;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding: 20px;
+    border: 1px solid #e7ebf3;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .95);
+    box-shadow: 0 18px 44px rgba(44, 64, 111, .10);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    font-size: 13px;
+    font-weight: 650;
+  }
+  .site-header .mobile-nav[hidden] { display: none; }
+
+  @media (max-width: 1050px) {
+    .site-header .nav-desktop { gap: 22px; }
+  }
+  @media (max-width: 780px) {
+    .site-header .navbar,
+    .site-header .navbar-inner { height: var(--header-h-mobile); }
+    .site-header .navbar-inner { gap: 24px; }
+    .site-header .navbar-logo { height: 28px; }
+    .site-header .nav-desktop { display: none; }
+    .site-header .nav-toggle { display: grid; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-header .utility-bar,
+    .site-header .navbar,
+    .site-header .nav-line { transition: none; }
+  }
+</style>
+
+<script>
+  const header = document.getElementById('site-header');
+
+  if (header) {
+    // Collapse the utility bar and frost the navbar after 12px of scroll.
+    // Collapsing takes the bar's height out of the page and scroll anchoring
+    // moves scrollY back by that much; with one threshold the jump crosses it
+    // again and the bar flickers. So the two directions sit a bar-height apart:
+    // collapse past 12px + bar, expand again at 12px.
+    const bar = header.querySelector<HTMLElement>('.utility-bar');
+    const onScroll = () => {
+      const collapsed = header.hasAttribute('data-scrolled');
+      const band = bar?.scrollHeight ?? 0;
+      if (!collapsed && window.scrollY > 12 + band) header.setAttribute('data-scrolled', '');
+      else if (collapsed && window.scrollY <= 12) header.removeAttribute('data-scrolled');
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Mobile menu.
+    const toggle = header.querySelector<HTMLButtonElement>('.nav-toggle');
+    const menu = header.querySelector<HTMLElement>('#mobile-nav');
+    const setOpen = (open: boolean) => {
+      if (!toggle || !menu) return;
+      menu.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? '');
+      toggle.querySelector<HTMLElement>('[data-icon="bars"]')!.hidden = open;
+      toggle.querySelector<HTMLElement>('[data-icon="xmark"]')!.hidden = !open;
+    };
+    toggle?.addEventListener('click', () => setOpen(menu?.hidden ?? false));
+    menu?.addEventListener('click', (e) => {
+      if ((e.target as Element).closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu && !menu.hidden) setOpen(false);
+    });
+  }
+</script>

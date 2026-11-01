@@ -1,0 +1,107 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import lockup from '../assets/brand/ambystech-lockup-dark.png';
+
+export interface FooterColumn {
+  title: string;
+  items: { label: string; href: string }[];
+}
+
+interface Props {
+  /** Short line under the logo (ignored when the `brand` slot is used). */
+  tagline?: string;
+  /** Link columns rendered when the default slot is empty. */
+  columns?: FooterColumn[];
+  /** Legal line, left side (ignored when the `bottom` slot is used). */
+  copyright?: string;
+  /** Legal line, right side. */
+  notice?: string;
+  /** Grid template of the top row on desktop. */
+  template?: string;
+  homeHref?: string;
+  homeLabel?: string;
+  logo?: ImageMetadata;
+}
+
+const {
+  tagline,
+  columns = [],
+  copyright = `© ${new Date().getFullYear()} Ambystech`,
+  notice,
+  template = '1.4fr 1fr 1fr 1fr',
+  homeHref = '/',
+  homeLabel = 'Ambystech home',
+  logo = lockup,
+} = Astro.props;
+---
+
+<!--
+  Shared site footer: always light, never dark. Slots:
+    brand    logo block; defaults to the logo + `tagline`
+    (default) link columns; defaults to `columns`
+    contact  an extra trailing column (corporate's phone / email / address)
+    bottom   the legal row; defaults to `copyright` + `notice`
+-->
+<footer class="site-footer w-full border-t border-line-100 bg-white pb-6 pt-11 text-ink-950" style={`--footer-cols: ${template};`}>
+  <div class="footer-grid container-site grid items-start">
+    <div class="min-w-0 max-w-[300px]">
+      <slot name="brand">
+        <a href={homeHref} aria-label={homeLabel} class="inline-flex items-center">
+          <Image src={logo} alt="Ambystech" height={80} class="block h-10 w-[165px] object-contain object-left" />
+        </a>
+        {tagline && <p class="mt-3.5 text-[12.5px] leading-[1.6] text-muted-500">{tagline}</p>}
+      </slot>
+    </div>
+
+    <slot>
+      {columns.map((c) => (
+        <div class="min-w-0 pt-1">
+          <h2 class="mb-3 text-[12px] font-bold text-navy-900">{c.title}</h2>
+          <ul class="m-0 flex list-none flex-col gap-0.5 p-0">
+            {c.items.map((i) => (
+              <li><a href={i.href} class="inline-flex min-h-[30px] items-center text-[12.5px] text-muted-500 no-underline hover:text-navy-900">{i.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </slot>
+
+    <slot name="contact" />
+  </div>
+
+  <div class="footer-bottom container-site mt-8 flex border-t border-line-100 pt-[18px] text-[11px] text-muted-500">
+    <slot name="bottom">
+      <span>{copyright}</span>
+      {notice && <span>{notice}</span>}
+    </slot>
+  </div>
+</footer>
+
+<style is:global>
+  .site-footer .footer-grid {
+    grid-template-columns: var(--footer-cols);
+    column-gap: 56px;
+    row-gap: 36px;
+  }
+  .site-footer .footer-bottom {
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  @media (max-width: 1050px) {
+    .site-footer .footer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 48px;
+    }
+  }
+  @media (max-width: 780px) {
+    .site-footer .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+  @media (max-width: 520px) {
+    .site-footer .footer-grid { grid-template-columns: 1fr; }
+  }
+</style>

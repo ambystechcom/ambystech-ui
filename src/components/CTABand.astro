@@ -1,0 +1,71 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  body: string;
+  /** Label of the white pill button. */
+  button: string;
+  href: string;
+  /** `clear` drops the white background so a page backdrop shows through. */
+  surface?: 'solid' | 'clear';
+}
+
+// All copy and the link come from the site, so the band renders the same in
+// English, Spanish or any other language; the package holds no translations.
+const { eyebrow, title, body, button, href, surface = 'solid' } = Astro.props;
+---
+<section class:list={['w-full pb-[18px] pt-6', surface === 'solid' && 'bg-white']} data-reveal>
+  <div class="container-site">
+    <div class="cta-band relative box-border flex gap-9 overflow-hidden rounded-[20px] text-white">
+      <span aria-hidden="true" class="cta-ring right-[-95px] bottom-[-78px]"></span>
+      <span aria-hidden="true" class="cta-ring right-[-160px] bottom-[-42px]"></span>
+      <div class="relative z-[2]">
+        {eyebrow && <span class="text-[10px] font-extrabold tracking-[.18em]">{eyebrow}</span>}
+        <h2 class="mb-[7px] mt-2 text-[30px] font-normal leading-[1.2] tracking-[-0.03em]">{title}</h2>
+        <p class="m-0 max-w-[650px] text-[12px] leading-[1.45] text-white/90">{body}</p>
+      </div>
+      <a href={href} class="cta-button relative z-[2] inline-flex items-center justify-center gap-[9px] whitespace-nowrap rounded-full bg-white px-7 py-[15px] text-[12px] font-extrabold leading-none tracking-[-0.01em] text-[#d522aa]">
+        <span>{button}</span><Icon name="arrowRight" size={13} />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    height: 161px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 31px 42px;
+    background: linear-gradient(100deg, #3978ff 0%, #9144ed 48%, #ee2cae 100%);
+    box-shadow: 0 15px 36px rgba(116, 61, 216, .20);
+  }
+  .cta-ring {
+    position: absolute;
+    width: 470px;
+    height: 150px;
+    transform: rotate(-8deg);
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, .13);
+  }
+  .cta-button {
+    box-shadow: 0 10px 22px rgba(62, 32, 120, .13), 0 0 0 1px rgba(255, 255, 255, .45);
+    transition: box-shadow 200ms, filter 200ms;
+  }
+  .cta-button:hover {
+    box-shadow: 0 0 0 1px rgba(255,255,255,.72), 0 0 16px rgba(255,255,255,.42), 0 0 30px rgba(213,34,170,.26), 0 10px 22px rgba(62,32,120,.13);
+  }
+  @media (max-width: 780px) {
+    .cta-band {
+      height: auto;
+      min-height: 160px;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+  @media (max-width: 520px) {
+    .cta-band { padding: 24px; }
+  }
+</style>
