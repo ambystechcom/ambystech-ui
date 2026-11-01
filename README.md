@@ -7,7 +7,7 @@ Astro compiles the `.astro` files.
 ## Install
 
 ```sh
-npm i github:ambystechcom/ambystech-ui#v0.1.2
+npm i github:ambystechcom/ambystech-ui#v0.2.0
 ```
 
 Requires `astro >= 7` and Tailwind CSS 4 in the consuming site.
@@ -41,7 +41,7 @@ import Icon from '@ambystech/ui/components/Icon.astro';
 | `theme.css` | `@theme` tokens (colors, shadows, font) and utilities: `.container-site`, `.btn-cta`, `.btn-dark`, `.btn-outline`, `.text-gradient`, `.card-hover`, `.tag`, `.section-eyebrow`, `.section-title`, `.section-pad` |
 | `components/Icon.astro` | Font Awesome Free icons by the site's names (`<Icon name="arrowRight" />`) |
 | `components/CTABand.astro` | Gradient call-to-action band; all copy via props |
-| `components/SiteHeader.astro` | Sticky header shell. Slots: `utility`, `nav`, `actions`, `mobile` |
+| `components/SiteHeader.astro` | Sticky header shell. Slots: `utility`, `nav`, `actions`, `mobile`, `toggle` |
 | `components/SiteFooter.astro` | Light footer shell. Slots: `brand`, default (columns), `contact`, `bottom` |
 | `assets/brand/*` | Lockup and symbol PNGs |
 

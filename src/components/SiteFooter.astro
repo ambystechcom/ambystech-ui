@@ -17,6 +17,12 @@ interface Props {
   copyright?: string;
   /** Legal line, right side. */
   notice?: string;
+  /** Spacing, in px: above the columns, below the legal row, and between the two. */
+  paddingTop?: number;
+  paddingBottom?: number;
+  bottomGap?: number;
+  /** Draw a hairline above the footer. */
+  bordered?: boolean;
   /** Grid template of the top row on desktop. */
   template?: string;
   homeHref?: string;
@@ -29,6 +35,10 @@ const {
   columns = [],
   copyright = `© ${new Date().getFullYear()} Ambystech`,
   notice,
+  paddingTop = 44,
+  paddingBottom = 24,
+  bottomGap = 32,
+  bordered = true,
   template = '1.4fr 1fr 1fr 1fr',
   homeHref = '/',
   homeLabel = 'Ambystech home',
@@ -43,7 +53,10 @@ const {
     contact  an extra trailing column (corporate's phone / email / address)
     bottom   the legal row; defaults to `copyright` + `notice`
 -->
-<footer class="site-footer w-full border-t border-line-100 bg-white pb-6 pt-11 text-ink-950" style={`--footer-cols: ${template};`}>
+<footer
+  class:list={['site-footer w-full bg-white text-ink-950', bordered && 'border-t border-line-100']}
+  style={`--footer-cols: ${template}; padding-top: ${paddingTop}px; padding-bottom: ${paddingBottom}px;`}
+>
   <div class="footer-grid container-site grid items-start">
     <div class="min-w-0 max-w-[300px]">
       <slot name="brand">
@@ -71,7 +84,7 @@ const {
     <slot name="contact" />
   </div>
 
-  <div class="footer-bottom container-site mt-8 flex border-t border-line-100 pt-[18px] text-[11px] text-muted-500">
+  <div class="footer-bottom container-site flex border-t border-line-100 pt-[18px] text-[11px] text-muted-500" style={`margin-top: ${bottomGap}px;`}>
     <slot name="bottom">
       <span>{copyright}</span>
       {notice && <span>{notice}</span>}

@@ -62,6 +62,8 @@ const hasMobile = Astro.slots.has('mobile') || links.length > 0;
     nav      desktop navigation; defaults to `links`
     actions  right-hand buttons (GitHub pill, Contact CTA, ...)
     mobile   contents of the mobile menu card; defaults to `links`
+    toggle   the mobile menu button; defaults to a round icon button. A custom one
+             needs class `nav-toggle`, aria-controls="mobile-nav" and data-label-open/-close
 -->
 <header
   id="site-header"
@@ -104,18 +106,20 @@ const hasMobile = Astro.slots.has('mobile') || links.length > 0;
       <div class:list={['header-actions flex flex-none items-center gap-2.5', !hasNav && 'ml-auto']}>
         <slot name="actions" />
         {hasMobile && (
-          <button
-            type="button"
-            class="nav-toggle grid size-11 cursor-pointer place-items-center rounded-full border border-line-200 bg-white text-navy-900"
-            aria-expanded="false"
-            aria-controls="mobile-nav"
-            aria-label={openLabel}
-            data-label-open={openLabel}
-            data-label-close={closeLabel}
-          >
-            <span data-icon="bars"><Icon name="bars" size={16} /></span>
-            <span data-icon="xmark" hidden><Icon name="xmark" size={16} /></span>
-          </button>
+          <slot name="toggle">
+            <button
+              type="button"
+              class="nav-toggle grid size-11 cursor-pointer place-items-center rounded-full border border-line-200 bg-white text-navy-900"
+              aria-expanded="false"
+              aria-controls="mobile-nav"
+              aria-label={openLabel}
+              data-label-open={openLabel}
+              data-label-close={closeLabel}
+            >
+              <span data-icon="bars"><Icon name="bars" size={16} /></span>
+              <span data-icon="xmark" hidden><Icon name="xmark" size={16} /></span>
+            </button>
+          </slot>
         )}
       </div>
     </div>
@@ -260,8 +264,10 @@ const hasMobile = Astro.slots.has('mobile') || links.length > 0;
       menu.hidden = !open;
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? '');
-      toggle.querySelector<HTMLElement>('[data-icon="bars"]')!.hidden = open;
-      toggle.querySelector<HTMLElement>('[data-icon="xmark"]')!.hidden = !open;
+      const bars = toggle.querySelector<HTMLElement>('[data-icon="bars"]');
+      const xmark = toggle.querySelector<HTMLElement>('[data-icon="xmark"]');
+      if (bars) bars.hidden = open;
+      if (xmark) xmark.hidden = !open;
     };
     toggle?.addEventListener('click', () => setOpen(menu?.hidden ?? false));
     menu?.addEventListener('click', (e) => {
